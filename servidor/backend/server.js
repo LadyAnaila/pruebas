@@ -15,9 +15,10 @@ const port = process.env.PORT || 5000;
 
 // Middleware
 app.use(cors({
-  origin: ['https://mi-frontend.onrender.com'], 
+  origin: ['https://frontend-621q.onrender.com'],
   credentials: true
 }));
+app.use(express.json());
 
 // Configuración de la base de datos PostgreSQL
 const client = new Client({
@@ -64,7 +65,7 @@ const authenticateToken = (req, res, next) => {
 //////////////////////////////////////////
 
 // Registro de usuario
-app.post('/users/register', async (req, res) => {
+app.post('/api/users/register', async (req, res) => {
   const { name, username, email, password, role } = req.body;
 
   if (!name || !username || !email || !password || !role) {
@@ -92,7 +93,7 @@ app.post('/users/register', async (req, res) => {
 });
 
 // Inicio de sesión
-app.post('/users/login', async (req, res) => {
+app.post('/api/users/login', async (req, res) => {
   const { username, password } = req.body;
 
   if (!username || !password) {
@@ -130,7 +131,7 @@ app.post('/users/login', async (req, res) => {
 
 
 // Obtener perfil del usuario
-app.get('/users/profile', authenticateToken, async (req, res) => {
+app.get('/api/users/profile', authenticateToken, async (req, res) => {
   const authHeader = req.headers['authorization'];
   const token = authHeader && authHeader.split(' ')[1];
 
@@ -658,7 +659,7 @@ app.get('/api/events/:id/results', authenticateToken, async (req, res) => {
 
 
 // Crear un nuevo mazo
-app.post('/decks', authenticateToken, async (req, res) => {
+app.post('/api/decks', authenticateToken, async (req, res) => {
   const { name, cards } = req.body;
   const { username } = req.user;
   if (!name || !Array.isArray(cards) || cards.length === 0) {
@@ -686,7 +687,7 @@ app.post('/decks', authenticateToken, async (req, res) => {
 });
 
 // Obtener todos los mazos del usuario autenticado
-app.get('/decks', authenticateToken, async (req, res) => {
+app.get('/api/decks', authenticateToken, async (req, res) => {
   const { username } = req.user;
   try {
     const userResult = await client.query('SELECT id FROM users WHERE username = $1', [username]);
@@ -704,7 +705,7 @@ app.get('/decks', authenticateToken, async (req, res) => {
 
 
 // Obtener info de un mazo concreto
-app.get('/decks/:deck_id', authenticateToken, async (req, res) => {
+app.get('/api/decks/:deck_id', authenticateToken, async (req, res) => {
   const { deck_id } = req.params;
   const { username } = req.user;
   try {
@@ -723,7 +724,7 @@ app.get('/decks/:deck_id', authenticateToken, async (req, res) => {
 });
 
 // Obtener las cartas de un mazo concreto
-app.get('/decks/:deck_id/cards', authenticateToken, async (req, res) => {
+app.get('/api/decks/:deck_id/cards', authenticateToken, async (req, res) => {
   const { deck_id } = req.params;
   const { username } = req.user;
   try {
@@ -745,7 +746,7 @@ app.get('/decks/:deck_id/cards', authenticateToken, async (req, res) => {
 });
 
 // Modificar un mazo
-app.put('/decks/:deck_id', authenticateToken, async (req, res) => {
+app.put('/api/decks/:deck_id', authenticateToken, async (req, res) => {
   const { deck_id } = req.params;
   const { name, cards } = req.body;
   const { username } = req.user;
@@ -776,7 +777,7 @@ app.put('/decks/:deck_id', authenticateToken, async (req, res) => {
 });
 
 // Eliminar un mazo
-app.delete('/decks/:deck_id', authenticateToken, async (req, res) => {
+app.delete('/api/decks/:deck_id', authenticateToken, async (req, res) => {
   const { deck_id } = req.params;
   const { username } = req.user;
 
